@@ -1,0 +1,12 @@
+numpy
+pandas
+matplotlib
+scikit-learn
+scikit-surprise
+surprise
+streamlit
+seaborn
+scipy
+warnings
+joblib
+plotly
