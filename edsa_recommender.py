@@ -170,12 +170,30 @@ def main():
         # Distribution of movie genres
         st.title("Distribution of Movie Genres")
         genre_counts = movies['genres'].str.split('|', expand=True).stack().value_counts()
-        st.bar_chart(genre_counts)
+        
+        # Create a DataFrame for the plot
+        genre_counts_df = pd.DataFrame({'Genre': genre_counts.index, 'Count': genre_counts.values})
+
+
+        st.write('Bar chart showing the count of each genre in the dataset.')
+
+        # Create the plot using Plotly Express
+        fig = px.bar(genre_counts_df, x='Genre', y='Count', title='Movie Genre Counts')
+        st.plotly_chart(fig)
 
         # Occurrence of plot keywords
         st.title("Occurrence of plot_keywords")
         plot_keywords = movies_imdb_df['plot_keywords'].str.split('|', expand=True).stack().value_counts()
-        st.bar_chart(plot_keywords)
+        
+        # Create a DataFrame for the plot
+        plot_keywords_df = pd.DataFrame({'keyword': plot_keywords.index, 'Count': plot_keywords.values})
+
+
+        st.write('Bar chart showing the count of each genre in the dataset.')
+
+        # Create the plot using Plotly Express
+        fig2 = px.bar(plot_keywords_df[:10], x='keyword', y='Count', title='Movie Plot Keyword Counts')
+        st.plotly_chart(fig2)
 
         # Distribution of Ratings (Added plot using sns)
         st.title("Distribution of Ratings")
@@ -184,12 +202,50 @@ def main():
         
         # Distribution of Runtime (Added plot using sns)
         st.title("Distribution of Runtime")
-        fig = go.Figure(data=[go.Histogram(x=imdb['runtime'])])
+        # Filter the data to keep runtimes less than 400
+        filtered_imdb = imdb[imdb['runtime'] < 400]
+
+        # Create the Plotly figure
+        fig = go.Figure(data=[go.Histogram(x=filtered_imdb['runtime'])])
+
+        # Customize the layout if needed
+        fig.update_layout(
+            title='Movie Runtimes',
+            xaxis_title='Runtime',
+            yaxis_title='Count',
+        )
+
+        # Create the Streamlit app
+        
+        st.write('Histogram showing the distribution of movie runtimes (less than 400 minutes).')
+
+        # Display the plot using Streamlit and Plotly
         st.plotly_chart(fig)
 
-        # Distribution of movies across directors
-        st.title("Distribution of movies across directors")
-        fig = go.Figure(data=[go.Histogram(x=imdb['director'])])
+        # Calculate the movie count for each director
+        director_counts = imdb['director'].value_counts()
+
+        # Select the top 10 directors based on the movie count
+        top_10_directors = director_counts.head(10)
+
+        # Filter the data to keep movies directed by the top 10 directors
+        filtered_imdb = imdb[imdb['director'].isin(top_10_directors.index)]
+
+        # Create the Plotly figure
+        fig = go.Figure(data=[go.Histogram(x=filtered_imdb['director'])])
+
+        # Customize the layout if needed
+        fig.update_layout(
+            title='Distribution of Movies Across Top 10 Directors',
+            xaxis_title='Director',
+            yaxis_title='Movie Count',
+        )
+
+        # Create the Streamlit app
+        st.title("Distribution of movies across top 10 directors")
+        st.write("Histogram showing the distribution of movies across the top 10 directors.")
+
+        # Display the plot using Streamlit and Plotly
         st.plotly_chart(fig)
 
 
